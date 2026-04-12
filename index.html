@@ -3,76 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFC | Comprehensive Admin Portal</title>
+    <title>AFC | Elite Portal</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cairo:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --gold: #D4A757; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
-        body { font-family: 'Cairo', sans-serif; margin: 0; background: #000; background: url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); z-index: -1; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(40px); border-left: 1px solid var(--border); overflow-x: hidden; transition: 0.4s ease; display: flex; flex-direction: column; }
-        .nav-item { display: flex; align-items: center; padding: 20px 25px; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; }
-        .nav-text { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); font-weight: bold; }
-        .admin-box { background: rgba(212, 167, 87, 0.05); border: 1px solid var(--gold); border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .admin-form input, .admin-form textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; }
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        :root { --gold: #D4A757; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Cairo', sans-serif; margin: 0; background: #050505 url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 100%); z-index: -1; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(30px); border-left: 1px solid var(--border); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
+        .nav-item { display: flex; align-items: center; padding: 22px 30px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .nav-text { font-family: 'Cinzel', serif; font-size: 15px; color: var(--gold); font-weight: bold; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s ease; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-        .btn-action { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; width: 100%; transition: 0.3s; }
-        .btn-action:disabled { background: #555; cursor: not-allowed; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: fadeIn 0.6s ease; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 25px; padding: 25px; margin-bottom: 25px; }
+        .btn-action { background: linear-gradient(45deg, #D4A757, #B38B45); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        input, textarea, select { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; border-radius: 12px; outline: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* مظهر خاص لبطاقة المباراة */
+        .match-tag { font-size: 12px; background: rgba(212,167,87,0.2); color: var(--gold); padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div id="sideNav" class="side-nav">
-        <div style="text-align: left; padding: 20px;"><i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i></div>
+        <div style="padding: 30px; text-align: left;"><i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 28px; cursor: pointer;"></i></div>
         <div style="flex-grow:1;">
-            <div class="nav-item" onclick="switchPage('news')"><span class="nav-text">آخر الأخبار</span></div>
-            <div class="nav-item" onclick="switchPage('matches')"><span class="nav-text">جدول المباريات</span></div>
-            <div class="nav-item" onclick="switchPage('vote')"><span class="nav-text">التصويت</span></div>
-            <div class="nav-item" onclick="switchPage('training')"><span class="nav-text">مواعيد التدريب</span></div>
-            <div class="nav-item" onclick="switchPage('quotes')"><span class="nav-text">اقتباسات</span></div>
-            <div id="adminSection" style="display:none;"><div class="nav-item" onclick="switchPage('adminHub')" style="background:rgba(212,167,87,0.1); border-top:1px solid var(--gold);"><span class="nav-text">مركز الإدارة</span></div></div>
+            <div class="nav-item" onclick="switchPage('news')"><i class="fas fa-newspaper" style="margin-left:15px; color:var(--gold)"></i><span class="nav-text">الأخبار</span></div>
+            <div class="nav-item" onclick="switchPage('matches')"><i class="fas fa-calendar-alt" style="margin-left:15px; color:var(--gold)"></i><span class="nav-text">المباريات</span></div>
+            <div id="adminSection" style="display:none;"><div class="nav-item" onclick="switchPage('adminHub')"><i class="fas fa-user-shield" style="margin-left:15px; color:var(--gold)"></i><span class="nav-text">لوحة التحكم</span></div></div>
         </div>
-        <div style="padding: 20px;"><button id="authBtn" class="btn-action" style="background:none; color:var(--gold); border:1px solid var(--gold);" onclick="handleAuth()">دخول الإدارة</button></div>
-    </div>
-
-    <div id="loginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; display:none; justify-content:center; align-items:center; backdrop-filter:blur(20px);">
-        <div class="glass-card" style="width:300px; text-align:center;">
-            <h2 style="font-family:'Cinzel'; color:var(--gold);">Secure Access</h2>
-            <input type="text" id="userInput" placeholder="المستخدم">
-            <input type="password" id="passInput" placeholder="كلمة السر">
-            <button class="btn-action" onclick="login()">دخول</button>
-            <p onclick="hideLogin()" style="cursor:pointer; margin-top:15px; font-size:12px; color:var(--gold);">إلغاء</p>
-        </div>
+        <div style="padding: 30px;"><button id="authBtn" class="btn-action" style="background:none; color:var(--gold); border:1px solid var(--gold);" onclick="handleAuth()">دخول المسؤول</button></div>
     </div>
 
     <header>
         <div style="width:40px"></div>
         <div style="text-align:center;">
-            <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--gold); object-fit: cover;">
-            <h1 style="font-family:'Cinzel'; color:var(--gold); font-size:16px; margin:0;">AFC PORTAL</h1>
+            <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:55px; height:55px; border-radius:50%; border:2px solid var(--gold); padding:2px;">
+            <p style="font-family:'Cinzel'; color:var(--gold); font-size:14px; margin:5px 0 0 0; letter-spacing:2px;">AFC PORTAL</p>
         </div>
-        <button onclick="toggleNav()" style="background:none; border:1px solid var(--gold); padding:8px 12px; border-radius:8px;"><i class="fas fa-bars" style="color:var(--gold)"></i></button>
+        <button onclick="toggleNav()" style="background:var(--glass); border:1px solid var(--border); padding:10px 15px; border-radius:12px;"><i class="fas fa-bars" style="color:var(--gold)"></i></button>
     </header>
 
     <div class="container">
         <section id="news" class="page active"><div id="newsFeed"></div></section>
-        <section id="matches" class="page"><div class="glass-card"><h2>جدول المباريات</h2><p>قريباً...</p></div></section>
-        <section id="vote" class="page"><div class="glass-card"><h2>التصويت</h2><p>لا يوجد تصويت حالي.</p></div></section>
-        <section id="training" class="page"><div class="glass-card"><h2>التدريبات</h2><p>قريباً...</p></div></section>
-        <section id="quotes" class="page"><div class="glass-card"><h2>اقتباسات</h2><p>قريباً...</p></div></section>
-        
+
+        <section id="matches" class="page"><div id="matchesFeed"></div></section>
+
         <section id="adminHub" class="page">
-            <div class="admin-box admin-form">
-                <h2 style="font-family:'Cinzel'; color:var(--gold);">تحديث الأخبار</h2>
-                <input type="text" id="titleInput" placeholder="عنوان الخبر">
-                <textarea id="descInput" rows="5" placeholder="تفاصيل الخبر..."></textarea>
+            <div class="glass-card">
+                <h2 style="font-family:'Cinzel'; color:var(--gold);">إدارة المحتوى</h2>
+                <select id="targetTable" onchange="toggleMatchInputs()">
+                    <option value="news">إضافة خبر جديد</option>
+                    <option value="matches">إضافة مباراة جديدة</option>
+                </select>
+                <input type="text" id="titleInput" placeholder="العنوان (مثلاً: الكرامة × الفتوة)">
+                
+                <div id="matchExtraInputs" style="display:none;">
+                    <input type="text" id="venueInput" placeholder="مكان المباراة (الملعب)">
+                    <input type="text" id="timeInput" placeholder="وقت المباراة (مثلاً 4:00 مساءً)">
+                </div>
+
+                <textarea id="descInput" rows="4" placeholder="تفاصيل إضافية..."></textarea>
                 <button id="pubBtn" class="btn-action" onclick="publish()">نشر الآن</button>
             </div>
         </section>
@@ -86,70 +82,71 @@
 
         let currentUserRole = "guest";
 
-        function toggleNav() {
-            const n = document.getElementById("sideNav");
-            n.style.width = (n.style.width === "300px") ? "0" : "300px";
-        }
-
-        function switchPage(id) { 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(window.innerWidth < 768) toggleNav();
-        }
-
-        function showLogin() { document.getElementById('loginOverlay').style.display = 'flex'; toggleNav(); }
-        function hideLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
+        function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = (n.style.width === "300px") ? "0" : "300px"; }
+        function switchPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); if(window.innerWidth < 768) toggleNav(); }
+        function toggleMatchInputs() { document.getElementById('matchExtraInputs').style.display = document.getElementById('targetTable').value === 'matches' ? 'block' : 'none'; }
         
         function handleAuth() { if (currentUserRole === "guest") showLogin(); else location.reload(); }
-
-        function login() {
-            const u = document.getElementById('userInput').value;
-            const p = document.getElementById('passInput').value;
+        function showLogin() { 
+            let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
             if(u === "QEVC12" && p === "MGR12") {
                 currentUserRole = "admin";
                 document.getElementById('adminSection').style.display = 'block';
-                document.getElementById('authBtn').innerText = "تسجيل الخروج";
-                hideLogin();
+                document.getElementById('authBtn').innerText = "خروج";
                 switchPage('adminHub');
             } else { alert("بيانات خاطئة!"); }
         }
 
-        async function loadNews() {
-            const { data, error } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
-            const feed = document.getElementById('newsFeed');
-            if (error) return;
-            feed.innerHTML = '<h2 style="font-family:Cinzel; color:var(--gold)">آخر الأخبار</h2>';
-            data.forEach(item => {
-                feed.innerHTML += `<div class="glass-card"><h3 style="color:var(--gold); margin:0;">${item.title}</h3><p>${item.content}</p></div>`;
+        async function loadData() {
+            // تحميل الأخبار
+            const resNews = await _supabase.from('news').select('*').order('created_at', { ascending: false });
+            const newsFeed = document.getElementById('newsFeed');
+            newsFeed.innerHTML = '<h2 style="font-family:Cinzel; color:var(--gold)">آخر الأخبار</h2>';
+            resNews.data.forEach(item => {
+                newsFeed.innerHTML += `<div class="glass-card"><h3 style="color:var(--gold); margin:0;">${item.title}</h3><p>${item.content}</p></div>`;
+            });
+
+            // تحميل المباريات
+            const resMatches = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
+            const matchesFeed = document.getElementById('matchesFeed');
+            matchesFeed.innerHTML = '<h2 style="font-family:Cinzel; color:var(--gold)">جدول المباريات</h2>';
+            resMatches.data.forEach(item => {
+                matchesFeed.innerHTML += `
+                    <div class="glass-card">
+                        <span class="match-tag">مباراة قادمة</span>
+                        <h3 style="color:white; margin:10px 0;">${item.title}</h3>
+                        <div style="font-size:13px; color:var(--gold);">
+                            <i class="fas fa-map-marker-alt"></i> ${item.venue || 'غير محدد'} 
+                            <span style="margin:0 10px;">|</span>
+                            <i class="fas fa-clock"></i> ${item.match_time || 'غير محدد'}
+                        </div>
+                        <p style="font-size:12px; opacity:0.7; margin-top:10px;">${item.content}</p>
+                    </div>`;
             });
         }
 
         async function publish() {
             const btn = document.getElementById('pubBtn');
+            const table = document.getElementById('targetTable').value;
             const title = document.getElementById('titleInput').value;
             const content = document.getElementById('descInput').value;
-            if(!title || !content) return alert("أكمل البيانات!");
 
-            btn.disabled = true;
-            btn.innerText = "جاري النشر...";
+            if(!title) return alert("يرجى إدخال العنوان!");
 
-            const { error } = await _supabase.from('news').insert([{ title, content }]);
-            if (error) {
-                alert("خطأ: " + error.message);
-                btn.disabled = false;
-                btn.innerText = "نشر الآن";
-            } else {
-                alert("تم النشر!");
-                document.getElementById('titleInput').value = "";
-                document.getElementById('descInput').value = "";
-                btn.disabled = false;
-                btn.innerText = "نشر الآن";
-                loadNews();
-                switchPage('news');
+            btn.disabled = true; btn.innerText = "جاري النشر...";
+
+            let insertData = { title, content };
+            if(table === 'matches') {
+                insertData.venue = document.getElementById('venueInput').value;
+                insertData.match_time = document.getElementById('timeInput').value;
             }
+
+            const { error } = await _supabase.from(table).insert([insertData]);
+            if (error) { alert("خطأ: " + error.message); btn.disabled = false; }
+            else { alert("تم النشر بنجاح!"); location.reload(); }
         }
 
-        window.onload = loadNews;
+        window.onload = loadData;
     </script>
 </body>
 </html>
