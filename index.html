@@ -9,81 +9,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root {
-            --gold: #D4A757;
-            --glass: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.15);
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            background: #000; /* خلفية احتياطية في حال لم تحمل الصورة */
-            background: url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75); z-index: -1;
-        }
-
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .side-nav {
-            height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0;
-            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(40px);
-            border-left: 1px solid var(--border); overflow-x: hidden;
-            transition: 0.4s ease; display: flex; flex-direction: column;
-        }
-
+        :root { --gold: #D4A757; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
+        body { font-family: 'Cairo', sans-serif; margin: 0; background: #000; background: url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); z-index: -1; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(40px); border-left: 1px solid var(--border); overflow-x: hidden; transition: 0.4s ease; display: flex; flex-direction: column; }
         .nav-item { display: flex; align-items: center; padding: 20px 25px; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; }
         .nav-text { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); font-weight: bold; }
-
         .admin-box { background: rgba(212, 167, 87, 0.05); border: 1px solid var(--gold); border-radius: 20px; padding: 30px; margin-bottom: 30px; }
-        .admin-form input, .admin-form textarea {
-            width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box;
-        }
-
+        .admin-form input, .admin-form textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; }
         .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.5s ease; }
         .glass-card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-
-        .btn-action { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; width: 100%; transition: 0.3s;}
-
+        .btn-action { background: var(--gold); color: black; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; width: 100%; transition: 0.3s; }
+        .btn-action:disabled { background: #555; cursor: not-allowed; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="sideNav" class="side-nav">
-        <div style="text-align: left; padding: 20px;">
-            <i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i>
-        </div>
+        <div style="text-align: left; padding: 20px;"><i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i></div>
         <div style="flex-grow:1;">
             <div class="nav-item" onclick="switchPage('news')"><span class="nav-text">آخر الأخبار</span></div>
-            <div id="adminSection" style="display:none;">
-                <div class="nav-item" onclick="switchPage('adminHub')" style="background:rgba(212,167,87,0.1); border-top:1px solid var(--gold);"><span class="nav-text">مركز الإدارة</span></div>
-            </div>
+            <div class="nav-item" onclick="switchPage('matches')"><span class="nav-text">جدول المباريات</span></div>
+            <div class="nav-item" onclick="switchPage('vote')"><span class="nav-text">التصويت</span></div>
+            <div class="nav-item" onclick="switchPage('training')"><span class="nav-text">مواعيد التدريب</span></div>
+            <div class="nav-item" onclick="switchPage('quotes')"><span class="nav-text">اقتباسات</span></div>
+            <div id="adminSection" style="display:none;"><div class="nav-item" onclick="switchPage('adminHub')" style="background:rgba(212,167,87,0.1); border-top:1px solid var(--gold);"><span class="nav-text">مركز الإدارة</span></div></div>
         </div>
-        <div style="padding: 20px;">
-            <button id="authBtn" class="btn-action" style="background:none; color:var(--gold); border:1px solid var(--gold);" onclick="handleAuth()">دخول الإدارة</button>
-        </div>
+        <div style="padding: 20px;"><button id="authBtn" class="btn-action" style="background:none; color:var(--gold); border:1px solid var(--gold);" onclick="handleAuth()">دخول الإدارة</button></div>
     </div>
 
     <div id="loginOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; display:none; justify-content:center; align-items:center; backdrop-filter:blur(20px);">
         <div class="glass-card" style="width:300px; text-align:center;">
             <h2 style="font-family:'Cinzel'; color:var(--gold);">Secure Access</h2>
-            <input type="text" id="userInput" placeholder="المستخدم" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px; border:1px solid var(--gold); background:#000; color:#fff;">
-            <input type="password" id="passInput" placeholder="كلمة السر" style="width:100%; padding:10px; margin-bottom:20px; border-radius:5px; border:1px solid var(--gold); background:#000; color:#fff;">
+            <input type="text" id="userInput" placeholder="المستخدم">
+            <input type="password" id="passInput" placeholder="كلمة السر">
             <button class="btn-action" onclick="login()">دخول</button>
             <p onclick="hideLogin()" style="cursor:pointer; margin-top:15px; font-size:12px; color:var(--gold);">إلغاء</p>
         </div>
@@ -95,45 +58,37 @@
             <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--gold); object-fit: cover;">
             <h1 style="font-family:'Cinzel'; color:var(--gold); font-size:16px; margin:0;">AFC PORTAL</h1>
         </div>
-        <button onclick="toggleNav()" style="background:none; border:1px solid var(--gold); padding:8px 12px; border-radius:8px;">
-            <i class="fas fa-bars" style="color:var(--gold)"></i>
-        </button>
+        <button onclick="toggleNav()" style="background:none; border:1px solid var(--gold); padding:8px 12px; border-radius:8px;"><i class="fas fa-bars" style="color:var(--gold)"></i></button>
     </header>
 
     <div class="container">
+        <section id="news" class="page active"><div id="newsFeed"></div></section>
+        <section id="matches" class="page"><div class="glass-card"><h2>جدول المباريات</h2><p>قريباً...</p></div></section>
+        <section id="vote" class="page"><div class="glass-card"><h2>التصويت</h2><p>لا يوجد تصويت حالي.</p></div></section>
+        <section id="training" class="page"><div class="glass-card"><h2>التدريبات</h2><p>قريباً...</p></div></section>
+        <section id="quotes" class="page"><div class="glass-card"><h2>اقتباسات</h2><p>قريباً...</p></div></section>
+        
         <section id="adminHub" class="page">
             <div class="admin-box admin-form">
-                <h2 style="font-family:'Cinzel'; color:var(--gold); margin-top:0;">تحديث الأخبار</h2>
+                <h2 style="font-family:'Cinzel'; color:var(--gold);">تحديث الأخبار</h2>
                 <input type="text" id="titleInput" placeholder="عنوان الخبر">
                 <textarea id="descInput" rows="5" placeholder="تفاصيل الخبر..."></textarea>
-                <button class="btn-action" onclick="publish()">نشر الآن على السحاب</button>
-            </div>
-        </section>
-
-        <section id="news" class="page active">
-            <div id="newsFeed">
-                <p style="text-align:center; opacity:0.5;">جاري تحميل الأخبار...</p>
+                <button id="pubBtn" class="btn-action" onclick="publish()">نشر الآن</button>
             </div>
         </section>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // التصحيح المهم هنا: تم تغيير اسم المتغير لتفادي التداخل
         const SB_URL = 'https://ymjasndwcyaodwnfvwza.supabase.co';
         const SB_KEY = 'sb_publishable_I1EvswkCrDQKbtgdhpbcZw_cwpwbt82';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let currentUserRole = "guest";
 
-        // وظائف القائمة والتبديل
         function toggleNav() {
             const n = document.getElementById("sideNav");
-            if (n.style.width === "300px") {
-                n.style.width = "0";
-            } else {
-                n.style.width = "300px";
-            }
+            n.style.width = (n.style.width === "300px") ? "0" : "300px";
         }
 
         function switchPage(id) { 
@@ -142,17 +97,10 @@
             if(window.innerWidth < 768) toggleNav();
         }
 
-        // تسجيل الدخول
         function showLogin() { document.getElementById('loginOverlay').style.display = 'flex'; toggleNav(); }
         function hideLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
         
-        function handleAuth() {
-            if (currentUserRole === "guest") {
-                showLogin();
-            } else {
-                location.reload(); // تسجيل الخروج
-            }
-        }
+        function handleAuth() { if (currentUserRole === "guest") showLogin(); else location.reload(); }
 
         function login() {
             const u = document.getElementById('userInput').value;
@@ -163,57 +111,44 @@
                 document.getElementById('authBtn').innerText = "تسجيل الخروج";
                 hideLogin();
                 switchPage('adminHub');
-                alert("تم تسجيل الدخول بنجاح.");
-            } else { 
-                alert("بيانات الدخول غير صحيحة!"); 
-            }
+            } else { alert("بيانات خاطئة!"); }
         }
 
-        // التعامل مع قاعدة البيانات
         async function loadNews() {
             const { data, error } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
             const feed = document.getElementById('newsFeed');
-            
-            if (error) {
-                feed.innerHTML = `<p style="color:red">خطأ في الاتصال: تأكد من إعدادات Supabase</p>`;
-                return;
-            }
-            
-            if (data.length === 0) {
-                feed.innerHTML = `<h2 style="font-family:Cinzel; color:var(--gold)">آخر الأخبار</h2><p style="text-align:center; opacity:0.5;">لا توجد أخبار منشورة حالياً.</p>`;
-                return;
-            }
-
+            if (error) return;
             feed.innerHTML = '<h2 style="font-family:Cinzel; color:var(--gold)">آخر الأخبار</h2>';
             data.forEach(item => {
-                feed.innerHTML += `
-                    <div class="glass-card">
-                        <h3 style="color:var(--gold); margin:0 0 10px 0;">${item.title}</h3>
-                        <p style="line-height:1.6; opacity:0.9;">${item.content}</p>
-                        <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
-                        <small style="opacity:0.4; font-size:10px;"><i class="far fa-clock"></i> ${new Date(item.created_at).toLocaleString('ar-EG')}</small>
-                    </div>`;
+                feed.innerHTML += `<div class="glass-card"><h3 style="color:var(--gold); margin:0;">${item.title}</h3><p>${item.content}</p></div>`;
             });
         }
 
         async function publish() {
+            const btn = document.getElementById('pubBtn');
             const title = document.getElementById('titleInput').value;
             const content = document.getElementById('descInput').value;
-            if(!title || !content) return alert("يرجى كتابة العنوان والتفاصيل!");
+            if(!title || !content) return alert("أكمل البيانات!");
+
+            btn.disabled = true;
+            btn.innerText = "جاري النشر...";
 
             const { error } = await _supabase.from('news').insert([{ title, content }]);
             if (error) {
-                alert("فشل النشر: " + error.message);
+                alert("خطأ: " + error.message);
+                btn.disabled = false;
+                btn.innerText = "نشر الآن";
             } else {
-                alert("تم نشر الخبر بنجاح!");
+                alert("تم النشر!");
                 document.getElementById('titleInput').value = "";
                 document.getElementById('descInput').value = "";
+                btn.disabled = false;
+                btn.innerText = "نشر الآن";
                 loadNews();
                 switchPage('news');
             }
         }
 
-        // تشغيل جلب الأخبار عند فتح الصفحة
         window.onload = loadNews;
     </script>
 </body>
