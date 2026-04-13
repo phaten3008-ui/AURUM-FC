@@ -26,7 +26,6 @@
         
         .vote-card { display: flex; align-items: center; justify-content: space-between; background: rgba(212, 167, 87, 0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .vote-btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .vote-btn:hover { transform: scale(1.05); background: #fff; }
 
         .news-img, video { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
         .player-circle { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #111; }
@@ -35,7 +34,7 @@
         .fa-trash { color: #ff5555; cursor: pointer; font-size: 18px; }
         .select-box { position: absolute; top: 15px; right: 15px; width: 22px; height: 22px; accent-color: var(--gold); }
 
-        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff4444; color: white; padding: 15px 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff4444; color: white; padding: 15px 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; }
         .bulk-bar.active { bottom: 30px; }
 
         .btn-action { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; font-family: 'Cairo'; }
@@ -117,7 +116,19 @@
         let selectedIds = [];
         let currentTable = "news";
 
+        // إعدادات الحسابات الجديدة
+        const validUsers = {
+            "Admin_AFC": { pass: "AFC_MGR2024", role: "admin" },
+            "Player_1": { pass: "P1_2024", role: "player" },
+            "Player_2": { pass: "P2_2024", role: "player" },
+            "Player_3": { pass: "P3_2024", role: "player" },
+            "Player_4": { pass: "P4_2024", role: "player" },
+            "Player_5": { pass: "P5_2024", role: "player" },
+            "Player_6": { pass: "P6_2024", role: "player" }
+        };
+
         function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
+        
         function switchPage(id) { 
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
@@ -136,15 +147,26 @@
         }
 
         function handleLogin() {
-            let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
-            if(u === "QEVC12" && p === "MGR12") {
-                userRole = "admin"; document.getElementById('adminMenu').style.display = 'block';
-                document.getElementById('playerOnlyNav').style.display = 'block';
-                document.getElementById('userIcon').style.color = "#55ff55"; loadAll();
-            } else if(u === "PLY11" && p === "BGHU3") {
-                userRole = "player"; document.getElementById('playerMenu').style.display = 'block';
-                document.getElementById('playerOnlyNav').style.display = 'block';
-                loadAll();
+            if(userRole !== "guest") {
+                if(confirm("هل تريد تسجيل الخروج؟")) {
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('activeUser');
+                    location.reload();
+                }
+                return;
+            }
+            
+            let u = prompt("اسم المستخدم:");
+            let p = prompt("كلمة المرور:");
+            
+            if (validUsers[u] && validUsers[u].pass === p) {
+                userRole = validUsers[u].role;
+                localStorage.setItem('role', userRole);
+                localStorage.setItem('activeUser', u);
+                alert(`مرحباً ${u}، تم الدخول بنجاح`);
+                location.reload();
+            } else {
+                alert("خطأ في اسم المستخدم أو كلمة المرور!");
             }
         }
 
@@ -191,37 +213,37 @@
         }
 
         async function loadAll() {
-            // News
+            // الأخبار
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
             let nH = '<h2>آخر الأخبار</h2>';
             news?.forEach(i => nH += `<div class="glass-card">${userRole==='admin'?`<input type="checkbox" class="select-box" onchange="updateSelection(this,'${i.id}')"><div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('news','${i.id}')"></i></div>`:''}${i.image_url?`<img src="${i.image_url}" class="news-img">`:''}<h3>${i.title}</h3><p>${i.content}</p></div>`);
             document.getElementById('newsFeed').innerHTML = nH;
 
-            // Vote Page
+            // لاعب الشهر
             const { data: vts } = await _supabase.from('player_of_month').select('*').order('votes', { ascending: false });
             let vH = '';
             vts?.forEach(i => vH += `<div class="vote-card"><div style="display:flex; align-items:center; gap:15px;"><img src="${i.player_img}" class="player-circle"><div><b>${i.player_name}</b><br><small>${i.votes} صوت</small></div></div><div style="display:flex; align-items:center; gap:10px;"><button class="vote-btn" onclick="addVote('${i.id}', ${i.votes})">تصويت</button>${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('player_of_month','${i.id}')"></i>`:''}</div></div>`);
             document.getElementById('voteFeed').innerHTML = vH || '<p>لا يوجد مرشحين</p>';
 
-            // Training Times
+            // أوقات التمرين
             const { data: tt } = await _supabase.from('training_times').select('*').order('created_at', { ascending: false });
             let ttH = '';
             tt?.forEach(i => ttH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('training_times','${i.id}')"></i>`:''}<h3>${i.title}</h3><p><i class="fas fa-calendar"></i> ${i.t_date} | <i class="fas fa-clock"></i> ${i.t_time}</p></div>`);
             document.getElementById('exerciseFeed').innerHTML = ttH;
 
-            // Matches
+            // المباريات
             const { data: matches } = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
             let mH = '<h2>جدول المباريات</h2>';
             matches?.forEach(i => mH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i>`:''}<h3>${i.title}</h3><p>${i.venue} - ${i.match_time}</p></div>`);
             document.getElementById('matchesFeed').innerHTML = mH;
 
-            // Players
+            // كلمة لاعب
             const { data: players } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
             let pH = '<h2>كلمة اللاعبين</h2>';
             players?.forEach(i => pH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i>`:''}<div class="player-header"><img src="${i.player_img}" class="player-circle"><h3>${i.title}</h3></div><p>" ${i.content} "</p></div>`);
             document.getElementById('playersFeed').innerHTML = pH;
 
-            // Training Media
+            // الميديا
             const { data: media } = await _supabase.from('training').select('*').order('created_at', { ascending: false });
             let tH = '<h2>لقطات التدريب</h2>';
             media?.forEach(i => tH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('training','${i.id}')"></i>`:''}${i.media_type==='video'?`<video src="${i.media_url}" controls></video>`:`<img src="${i.media_url}" class="news-img">`}<h3>${i.title}</h3></div>`);
@@ -237,7 +259,19 @@
         async function deleteItem(t, id) { if(confirm("حذف؟")) { await _supabase.from(t).delete().eq('id', id); location.reload(); } }
         async function bulkDelete() { if(confirm("حذف المختار؟")) { await _supabase.from(currentTable).delete().in('id', selectedIds); location.reload(); } }
 
-        window.onload = loadAll;
+        async function checkUser() {
+            const savedRole = localStorage.getItem('role');
+            if (savedRole) {
+                userRole = savedRole;
+                document.getElementById('userIcon').style.color = (userRole === 'admin') ? "#55ff55" : "#D4A757";
+                document.getElementById('playerOnlyNav').style.display = 'block';
+                if(userRole === 'admin') document.getElementById('adminMenu').style.display = 'block';
+                if(userRole === 'player') document.getElementById('playerMenu').style.display = 'block';
+            }
+            loadAll();
+        }
+
+        window.onload = checkUser;
     </script>
 </body>
 </html>
