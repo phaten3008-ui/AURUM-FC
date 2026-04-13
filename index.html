@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFC | Bulk Management</title>
+    <title>AFC | Media & News Portal</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cairo:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,33 +11,32 @@
     <style>
         :root { --gold: #D4A757; --border: rgba(255, 255, 255, 0.1); }
         body { font-family: 'Cairo', sans-serif; margin: 0; background: #050505 url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: -1; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: -1; }
         
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(30px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-text { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); font-weight: bold; }
 
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px 100px 20px; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px 120px 20px; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.5s ease; }
         
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; transition: 0.3s; }
-        .glass-card.selected { border-color: var(--gold); background: rgba(212, 167, 87, 0.05); }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 25px; position: relative; overflow: hidden; }
         
-        /* مربعات التحديد */
-        .select-box { position: absolute; top: 20px; right: 20px; width: 20px; height: 20px; accent-color: var(--gold); cursor: pointer; display: none; }
-        
-        .btn-action { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
-        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; border-radius: 10px; font-family: 'Cairo'; }
+        /* ميديا الأخبار والتدريبات */
+        .news-img { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .video-container { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 15px; }
 
-        .admin-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; z-index: 10; }
-        .admin-controls i { cursor: pointer; font-size: 18px; transition: 0.3s; opacity: 0.7; }
-        .admin-controls i:hover { opacity: 1; }
-        .fa-trash { color: #ff5555; } .fa-edit { color: #55ff55; }
+        /* دائرة صورة اللاعب */
+        .player-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .player-circle { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
 
-        /* شريط الحذف الجماعي السفلي */
-        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff5555; color: white; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; box-shadow: 0 5px 20px rgba(255,85,85,0.4); }
+        .select-box { position: absolute; top: 15px; right: 15px; z-index: 20; width: 20px; height: 20px; accent-color: var(--gold); }
+        .btn-action { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-family: 'Cairo'; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 10px; font-family: 'Cairo'; box-sizing: border-box; }
+
+        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff4444; color: white; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; }
         .bulk-bar.active { bottom: 30px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -47,19 +46,20 @@
 
     <div id="bulkBar" class="bulk-bar">
         <span id="bulkCount">تم تحديد 0 عناصر</span>
-        <button onclick="bulkDelete()" style="background:white; color:#ff5555; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">حذف الكل</button>
+        <button onclick="bulkDelete()" style="background:white; color:#ff4444; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">حذف الكل</button>
     </div>
 
     <div id="sideNav" class="side-nav">
         <div style="padding: 30px;"><i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i></div>
         <div style="flex-grow:1;">
             <div class="nav-item" onclick="switchPage('news')"><span class="nav-text">الأخبار</span></div>
+            <div class="nav-item" onclick="switchPage('training')"><span class="nav-text">لقطات التدريب</span></div>
             <div class="nav-item" onclick="switchPage('matches')"><span class="nav-text">المباريات</span></div>
             <div class="nav-item" onclick="switchPage('players')"><span class="nav-text">كلمة اللاعبين</span></div>
-            <div id="adminMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('adminHub')"><span class="nav-text">لوحة التحكم (مدير)</span></div></div>
-            <div id="playerMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('playerWrite')"><span class="nav-text">كتابة كلمة (لاعب)</span></div></div>
+            <div id="adminMenu" style="display:none;"><div class="nav-item" onclick="switchPage('adminHub')"><span class="nav-text">إدارة الميديا</span></div></div>
+            <div id="playerMenu" style="display:none;"><div class="nav-item" onclick="switchPage('playerWrite')"><span class="nav-text">كتابة كلمة لاعب</span></div></div>
         </div>
-        <div style="padding: 20px; text-align: center; font-size: 12px; color: var(--gold);" id="userStatus">زائر</div>
+        <div id="userStatus" style="padding:20px; text-align:center; color:var(--gold); font-size:12px;">زائر</div>
     </div>
 
     <header>
@@ -70,31 +70,38 @@
 
     <div class="container">
         <section id="news" class="page active"><div id="newsFeed"></div></section>
+        <section id="training" class="page"><div id="trainingFeed"></div></section>
         <section id="matches" class="page"><div id="matchesFeed"></div></section>
         <section id="players" class="page"><div id="playersFeed"></div></section>
 
         <section id="adminHub" class="page">
             <div class="glass-card">
-                <h2 style="color:var(--gold)">إضافة محتوى جديد</h2>
-                <select id="targetTable" onchange="checkMatchType()">
-                    <option value="news">خبر</option>
-                    <option value="matches">مباراة</option>
+                <h2 style="color:var(--gold)">إضافة محتوى إعلامي</h2>
+                <select id="targetTable" onchange="toggleInputs()">
+                    <option value="news">خبر مع صورة</option>
+                    <option value="training">تدريبات (فيديو/صورة)</option>
+                    <option value="matches">مباراة جديدة</option>
                 </select>
-                <input type="text" id="adminTitle" placeholder="العنوان / الفرق">
+                <input type="text" id="adminTitle" placeholder="العنوان">
+                <input type="text" id="adminMediaUrl" placeholder="رابط الصورة أو الفيديو (URL)">
+                <div id="trainingType" style="display:none;">
+                    <select id="mediaType"><option value="image">نوع الميديا: صورة</option><option value="video">نوع الميديا: فيديو</option></select>
+                </div>
                 <div id="matchFields" style="display:none;">
                     <input type="text" id="matchVenue" placeholder="الملعب">
                     <input type="text" id="matchTime" placeholder="الوقت">
                 </div>
                 <textarea id="adminContent" rows="4" placeholder="التفاصيل"></textarea>
-                <button class="btn-action" onclick="publish('admin')">نشر</button>
+                <button class="btn-action" onclick="publish('admin')">نشر المحتوى</button>
             </div>
         </section>
 
         <section id="playerWrite" class="page">
             <div class="glass-card">
-                <h2 style="color:var(--gold)">كلمة لاعب</h2>
-                <input type="text" id="playerTitle" placeholder="اسمك">
-                <textarea id="playerContent" rows="4" placeholder="رسالتك..."></textarea>
+                <h2 style="color:var(--gold)">كابتن: اكتب كلمتك</h2>
+                <input type="text" id="playerTitle" placeholder="اسمك الكامل">
+                <input type="text" id="playerImgUrl" placeholder="رابط صورتك الشخصية (URL)">
+                <textarea id="playerContent" rows="4" placeholder="رسالتك للجمهور..."></textarea>
                 <button class="btn-action" onclick="publish('player')">نشر</button>
             </div>
         </section>
@@ -108,128 +115,107 @@
 
         let userRole = "guest";
         let selectedIds = [];
-        let currentTable = "news"; // لتعقب الجدول الحالي للحذف الجماعي
+        let currentTable = "news";
 
         function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
         function switchPage(id) { 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
-            document.getElementById(id).classList.add('active'); 
-            if(['news', 'matches', 'players'].includes(id)) currentTable = (id === 'players') ? 'players_word' : id;
-            clearSelection();
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            currentTable = (id === 'players') ? 'players_word' : id;
+            selectedIds = []; document.getElementById('bulkBar').classList.remove('active');
             toggleNav(); 
         }
-        function checkMatchType() { document.getElementById('matchFields').style.display = document.getElementById('targetTable').value === 'matches' ? 'block' : 'none'; }
 
-        function handleLogin() {
-            if(userRole !== "guest") { if(confirm("خروج؟")) location.reload(); return; }
-            let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
-            if(u === "QEVC12" && p === "MGR12") {
-                userRole = "admin";
-                document.getElementById('adminMenu').style.display = 'block';
-                document.getElementById('userStatus').innerText = "المدير العام";
-                loadAll(); switchPage('adminHub');
-            } else if(u === "PLY11" && p === "BGHU3") {
-                userRole = "player";
-                document.getElementById('playerMenu').style.display = 'block';
-                document.getElementById('userStatus').innerText = "لاعب الفريق";
-                loadAll(); switchPage('playerWrite');
-            } else { alert("خطأ!"); }
+        function toggleInputs() {
+            const table = document.getElementById('targetTable').value;
+            document.getElementById('trainingType').style.display = table === 'training' ? 'block' : 'none';
+            document.getElementById('matchFields').style.display = table === 'matches' ? 'block' : 'none';
         }
 
-        // تحديث الاختيارات
-        function updateSelection(checkbox, id) {
-            if(checkbox.checked) selectedIds.push(id);
-            else selectedIds = selectedIds.filter(i => i !== id);
-            
-            const bar = document.getElementById('bulkBar');
-            const count = document.getElementById('bulkCount');
-            
-            if(selectedIds.length > 0) {
-                bar.classList.add('active');
-                count.innerText = `تم تحديد ${selectedIds.length} عنصر`;
-            } else {
-                bar.classList.remove('active');
+        function handleLogin() {
+            let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
+            if(u === "QEVC12" && p === "MGR12") {
+                userRole = "admin"; document.getElementById('adminMenu').style.display = 'block';
+                document.getElementById('userStatus').innerText = "المدير العام"; loadAll();
+            } else if(u === "PLY11" && p === "BGHU3") {
+                userRole = "player"; document.getElementById('playerMenu').style.display = 'block';
+                document.getElementById('userStatus').innerText = "اللاعب"; loadAll();
             }
         }
 
-        function clearSelection() {
-            selectedIds = [];
-            document.getElementById('bulkBar').classList.remove('active');
+        function updateSelection(checkbox, id) {
+            if(checkbox.checked) selectedIds.push(id); else selectedIds = selectedIds.filter(i => i !== id);
+            const bar = document.getElementById('bulkBar');
+            document.getElementById('bulkCount').innerText = `تم تحديد ${selectedIds.length}`;
+            if(selectedIds.length > 0) bar.classList.add('active'); else bar.classList.remove('active');
         }
 
         async function loadAll() {
-            // أخبار
+            // تحميل الأخبار مع صور
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
             let newsHTML = '<h2 style="color:var(--gold)">آخر الأخبار</h2>';
             news.forEach(i => {
-                newsHTML += `<div class="glass-card" id="card-${i.id}">
-                    ${userRole === 'admin' ? `
-                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
-                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('news','${i.id}')"></i><i class="fas fa-edit" onclick="editItem('news','${i.id}','${i.title}','${i.content}')"></i></div>
-                    ` : ''}
+                newsHTML += `<div class="glass-card">
+                    ${userRole === 'admin' ? `<input type="checkbox" class="select-box" onchange="updateSelection(this, '${i.id}')">` : ''}
+                    ${i.image_url ? `<img src="${i.image_url}" class="news-img">` : ''}
                     <h3>${i.title}</h3><p>${i.content}</p>
                 </div>`;
             });
             document.getElementById('newsFeed').innerHTML = newsHTML;
 
-            // مباريات
-            const { data: matches } = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
-            let mHTML = '<h2 style="color:var(--gold)">جدول المباريات</h2>';
-            matches.forEach(i => {
-                mHTML += `<div class="glass-card">
-                    ${userRole === 'admin' ? `
-                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
-                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i></div>
-                    ` : ''}
-                    <h3>${i.title}</h3>
-                    <div style="color:var(--gold); font-size:13px;"><i class="fas fa-map-marker-alt"></i> ${i.venue} | <i class="fas fa-clock"></i> ${i.match_time}</div>
+            // تحميل التدريبات
+            const { data: train } = await _supabase.from('training').select('*').order('created_at', { ascending: false });
+            let trainHTML = '<h2 style="color:var(--gold)">لقطات التدريب</h2>';
+            train.forEach(i => {
+                trainHTML += `<div class="glass-card">
+                    ${userRole === 'admin' ? `<input type="checkbox" class="select-box" onchange="updateSelection(this, '${i.id}')">` : ''}
+                    ${i.media_type === 'video' ? `<div class="video-container"><video src="${i.media_url}" controls style="width:100%"></video></div>` : `<img src="${i.media_url}" class="news-img">`}
+                    <h3>${i.title}</h3><p>${i.content}</p>
                 </div>`;
             });
-            document.getElementById('matchesFeed').innerHTML = mHTML;
+            document.getElementById('trainingFeed').innerHTML = trainHTML;
 
-            // كلمة لاعبين
+            // تحميل كلمة اللاعبين مع صورة دائرية
             const { data: players } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
             let pHTML = '<h2 style="color:var(--gold)">كلمة اللاعبين</h2>';
             players.forEach(i => {
                 pHTML += `<div class="glass-card">
-                    ${userRole === 'admin' ? `
-                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
-                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i></div>
-                    ` : ''}
-                    <h3 style="color:var(--gold)">${i.title}</h3><p>"${i.content}"</p>
+                    ${userRole === 'admin' ? `<input type="checkbox" class="select-box" onchange="updateSelection(this, '${i.id}')">` : ''}
+                    <div class="player-header">
+                        <img src="${i.player_img || 'https://via.placeholder.com/50'}" class="player-circle">
+                        <h3 style="color:var(--gold); margin:0;">${i.title}</h3>
+                    </div>
+                    <p style="font-style:italic">" ${i.content} "</p>
                 </div>`;
             });
             document.getElementById('playersFeed').innerHTML = pHTML;
         }
 
-        async function bulkDelete() {
-            if(!confirm(`هل تريد حذف ${selectedIds.length} عناصر نهائياً؟`)) return;
-            const { error } = await _supabase.from(currentTable).delete().in('id', selectedIds);
-            if(!error) { alert("تم الحذف بنجاح"); location.reload(); }
-        }
+        async function publish(type) {
+            let table = (type === 'admin') ? document.getElementById('targetTable').value : 'players_word';
+            let payload = {
+                title: (type === 'admin') ? document.getElementById('adminTitle').value : document.getElementById('playerTitle').value,
+                content: (type === 'admin') ? document.getElementById('adminContent').value : document.getElementById('playerContent').value
+            };
 
-        async function deleteItem(table, id) {
-            if(!confirm("حذف؟")) return;
-            await _supabase.from(table).delete().eq('id', id);
+            if(type === 'admin') {
+                if(table === 'news') payload.image_url = document.getElementById('adminMediaUrl').value;
+                if(table === 'training') {
+                    payload.media_url = document.getElementById('adminMediaUrl').value;
+                    payload.media_type = document.getElementById('mediaType').value;
+                }
+            } else {
+                payload.player_img = document.getElementById('playerImgUrl').value;
+            }
+
+            await _supabase.from(table).insert([payload]);
             location.reload();
         }
 
-        async function editItem(table, id, t, c) {
-            let nT = prompt("العنوان:", t); let nC = prompt("المحتوى:", c);
-            if(nT && nC) { await _supabase.from(table).update({ title: nT, content: nC }).eq('id', id); location.reload(); }
-        }
-
-        async function publish(type) {
-            let table = (type === 'admin') ? document.getElementById('targetTable').value : 'players_word';
-            let title = (type === 'admin') ? document.getElementById('adminTitle').value : document.getElementById('playerTitle').value;
-            let content = (type === 'admin') ? document.getElementById('adminContent').value : document.getElementById('playerContent').value;
-            let payload = { title, content };
-            if(table === 'matches') {
-                payload.venue = document.getElementById('matchVenue').value;
-                payload.match_time = document.getElementById('matchTime').value;
-            }
-            const { error } = await _supabase.from(table).insert([payload]);
-            if(!error) location.reload();
+        async function bulkDelete() {
+            if(!confirm("حذف المختار؟")) return;
+            await _supabase.from(currentTable).delete().in('id', selectedIds);
+            location.reload();
         }
 
         window.onload = loadAll;
