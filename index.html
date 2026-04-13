@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFC | Full Storage Portal</title>
+    <title>AFC | Media Portal Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,59 +12,65 @@
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
         .container { max-width: 800px; margin: 40px auto; padding: 0 20px 120px 20px; }
         .page { display: none; }
-        .page.active { display: block; }
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 25px; }
-        .news-img, video { width: 100%; border-radius: 15px; margin-bottom: 15px; }
-        .player-circle { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-        .btn-action { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
-        input[type="file"] { background: var(--border); padding: 10px; margin-bottom: 15px; cursor: pointer; }
-        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 10px; box-sizing: border-box; }
-        /* القائمة الجانبية كريستال */
-        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); border-left: 1px solid var(--border); overflow-x: hidden; transition: 0.5s; display: flex; flex-direction: column; }
+        .page.active { display: block; animation: fadeIn 0.5s ease; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 25px; position: relative; }
+        .news-img, video { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .player-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .player-circle { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #222; }
+        .btn-action { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        .btn-action:disabled { background: #555; cursor: not-allowed; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Cairo'; }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(30px); border-left: 1px solid var(--border); overflow-x: hidden; transition: 0.5s; display: flex; flex-direction: column; }
+        .nav-item { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.3s; }
+        .nav-item:hover { background: rgba(212, 167, 87, 0.1); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header>
         <button onclick="toggleNav()" style="background:none; border:none; color:var(--gold); font-size:25px;"><i class="fas fa-bars"></i></button>
-        <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:45px; border-radius:50%;">
-        <button onclick="handleLogin()" style="background:none; border:none; color:var(--gold); font-size:25px;"><i class="fas fa-user-circle"></i></button>
+        <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:45px; border-radius:50%; border:1px solid var(--gold);">
+        <button onclick="handleLogin()" style="background:none; border:none; color:var(--gold); font-size:25px;"><i class="fas fa-user-circle" id="userIcon"></i></button>
     </header>
 
     <div id="sideNav" class="side-nav">
-        <div style="padding:20px" onclick="toggleNav()"><i class="fas fa-times" style="font-size:25px; color:var(--gold)"></i></div>
-        <div onclick="switchPage('news')" style="padding:20px; cursor:pointer">الأخبار</div>
-        <div onclick="switchPage('training')" style="padding:20px; cursor:pointer">التدريبات</div>
-        <div id="adminMenu" style="display:none; padding:20px; color:var(--gold)" onclick="switchPage('adminHub')">لوحة التحكم</div>
-        <div id="playerMenu" style="display:none; padding:20px; color:var(--gold)" onclick="switchPage('playerWrite')">كلمة لاعب</div>
+        <div style="padding:25px; text-align: left;"><i class="fas fa-times" onclick="toggleNav()" style="font-size:25px; color:var(--gold); cursor:pointer;"></i></div>
+        <div class="nav-item" onclick="switchPage('news')">الأخبار</div>
+        <div class="nav-item" onclick="switchPage('training')">لقطات التدريب</div>
+        <div class="nav-item" onclick="switchPage('players')">كلمة اللاعبين</div>
+        <div id="adminMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('adminHub')">لوحة التحكم (مدير)</div></div>
+        <div id="playerMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('playerWrite')">كتابة كلمة (لاعب)</div></div>
     </div>
 
     <div class="container">
         <section id="news" class="page active"><div id="newsFeed"></div></section>
         <section id="training" class="page"><div id="trainingFeed"></div></section>
-        <section id="playerWrite" class="page">
-            <div class="glass-card">
-                <h2>كلمة كابتن الفريق</h2>
-                <input type="text" id="pName" placeholder="اسم اللاعب">
-                <label>صورة اللاعب الشخصية:</label>
-                <input type="file" id="pImgFile" accept="image/*">
-                <textarea id="pText" placeholder="اكتب كلمتك هنا..."></textarea>
-                <button class="btn-action" onclick="publishWithFile('player')">نشر</button>
-            </div>
-        </section>
+        <section id="players" class="page"><div id="playersFeed"></div></section>
 
         <section id="adminHub" class="page">
             <div class="glass-card">
-                <h2>إضافة محتوى جديد (رفع ملفات)</h2>
-                <select id="targetTab" onchange="toggleForm()">
-                    <option value="news">خبر (صورة)</option>
-                    <option value="training">تدريب (فيديو أو صورة)</option>
+                <h2 style="color:var(--gold)">رفع محتوى جديد</h2>
+                <select id="targetTab">
+                    <option value="news">خبر جديد (صورة)</option>
+                    <option value="training">لقطة تدريب (فيديو/صورة)</option>
                 </select>
                 <input type="text" id="mTitle" placeholder="العنوان">
-                <label>اختر الملف (صورة أو فيديو):</label>
-                <input type="file" id="mFile">
-                <textarea id="mContent" placeholder="الوصف"></textarea>
-                <button id="uploadBtn" class="btn-action" onclick="publishWithFile('admin')">رفع ونشر الآن</button>
+                <label style="display:block; margin-bottom:5px; font-size:12px;">اختر الملف من جهازك:</label>
+                <input type="file" id="mFile" accept="image/*,video/*">
+                <textarea id="mContent" rows="4" placeholder="التفاصيل..."></textarea>
+                <button id="mainUploadBtn" class="btn-action" onclick="publishWithFile('admin')">رفع ونشر الآن</button>
+            </div>
+        </section>
+
+        <section id="playerWrite" class="page">
+            <div class="glass-card">
+                <h2 style="color:var(--gold)">كلمتك يا كابتن</h2>
+                <input type="text" id="pName" placeholder="اسم اللاعب">
+                <label style="display:block; margin-bottom:5px; font-size:12px;">صورة اللاعب الشخصية:</label>
+                <input type="file" id="pImgFile" accept="image/*">
+                <textarea id="pText" rows="4" placeholder="اكتب رسالتك للجمهور..."></textarea>
+                <button id="playerUploadBtn" class="btn-action" onclick="publishWithFile('player')">نشر الكلمة</button>
             </div>
         </section>
     </div>
@@ -77,74 +83,120 @@
 
         let userRole = "guest";
 
-        function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "250px" ? "0" : "250px"; }
+        function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
         function switchPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); toggleNav(); }
 
         function handleLogin() {
+            if(userRole !== "guest") { if(confirm("خروج؟")) location.reload(); return; }
             let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
-            if(u === "QEVC12" && p === "MGR12") { userRole = "admin"; document.getElementById('adminMenu').style.display = "block"; }
-            if(u === "PLY11" && p === "BGHU3") { userRole = "player"; document.getElementById('playerMenu').style.display = "block"; }
+            if(u === "QEVC12" && p === "MGR12") {
+                userRole = "admin"; document.getElementById('adminMenu').style.display = 'block';
+                document.getElementById('userIcon').style.color = "#55ff55"; alert("مرحباً أيها المدير");
+            } else if(u === "PLY11" && p === "BGHU3") {
+                userRole = "player"; document.getElementById('playerMenu').style.display = 'block';
+                alert("مرحباً يا كابتن");
+            }
         }
 
+        // دالة الرفع المحسنة والمدفوعة بـ SQL Policies
         async function uploadFile(file) {
-            const fileName = Date.now() + "_" + file.name;
-            const { data, error } = await _supabase.storage.from('media').upload(fileName, file);
+            if(!file) return null;
+            // تنظيف الاسم وإضافة طابع زمني لمنع التكرار
+            const cleanName = Date.now() + "_" + file.name.replace(/[^\w.]/g, "_");
+            
+            const { data, error } = await _supabase.storage
+                .from('media')
+                .upload(cleanName, file, { cacheControl: '3600', upsert: true });
+
             if (error) throw error;
-            const { data: urlData } = _supabase.storage.from('media').getPublicUrl(fileName);
+
+            const { data: urlData } = _supabase.storage.from('media').getPublicUrl(cleanName);
             return urlData.publicUrl;
         }
 
         async function publishWithFile(role) {
-            const btn = document.getElementById('uploadBtn');
-            btn.disabled = true; btn.innerText = "جاري الرفع... يرجى الانتظار";
+            const btn = role === 'admin' ? document.getElementById('mainUploadBtn') : document.getElementById('playerUploadBtn');
+            const originalText = btn.innerText;
             
             try {
+                btn.disabled = true;
+                btn.innerText = "جاري المعالجة والرفع... يرجى الانتظار";
+
                 if(role === 'admin') {
                     const table = document.getElementById('targetTab').value;
                     const file = document.getElementById('mFile').files[0];
-                    const fileUrl = file ? await uploadFile(file) : null;
+                    const fileUrl = await uploadFile(file);
                     
                     let payload = {
                         title: document.getElementById('mTitle').value,
                         content: document.getElementById('mContent').value
                     };
                     
-                    if(table === 'news') payload.image_url = fileUrl;
-                    else { payload.media_url = fileUrl; payload.media_type = file.type.includes('video') ? 'video' : 'image'; }
+                    if(table === 'news') {
+                        payload.image_url = fileUrl;
+                    } else {
+                        payload.media_url = fileUrl;
+                        payload.media_type = file && file.type.includes('video') ? 'video' : 'image';
+                    }
                     
-                    await _supabase.from(table).insert([payload]);
+                    const { error } = await _supabase.from(table).insert([payload]);
+                    if(error) throw error;
                 } else {
                     const file = document.getElementById('pImgFile').files[0];
-                    const imgUrl = file ? await uploadFile(file) : null;
-                    await _supabase.from('players_word').insert([{
+                    const imgUrl = await uploadFile(file);
+                    
+                    const { error } = await _supabase.from('players_word').insert([{
                         title: document.getElementById('pName').value,
                         content: document.getElementById('pText').value,
                         player_img: imgUrl
                     }]);
+                    if(error) throw error;
                 }
-                alert("تم الرفع والنشر بنجاح!"); location.reload();
-            } catch (err) { alert("خطأ: " + err.message); btn.disabled = false; btn.innerText = "حاول مرة أخرى"; }
+
+                alert("تم النشر بنجاح!");
+                location.reload();
+            } catch (err) {
+                console.error(err);
+                alert("حدث خطأ أثناء الرفع: " + err.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         }
 
-        async function loadFeed() {
+        async function loadAll() {
+            // أخبار
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
-            let h = '<h2>آخر الأخبار</h2>';
-            news.forEach(i => {
-                h += `<div class="glass-card">${i.image_url ? `<img src="${i.image_url}" class="news-img">` : ''}<h3>${i.title}</h3><p>${i.content}</p></div>`;
+            let nH = '<h2 style="color:var(--gold)">آخر الأخبار</h2>';
+            news?.forEach(i => {
+                nH += `<div class="glass-card">${i.image_url ? `<img src="${i.image_url}" class="news-img">` : ''}<h3>${i.title}</h3><p>${i.content}</p></div>`;
             });
-            document.getElementById('newsFeed').innerHTML = h;
+            document.getElementById('newsFeed').innerHTML = nH;
 
+            // تدريبات
             const { data: train } = await _supabase.from('training').select('*').order('created_at', { ascending: false });
-            let th = '<h2>التدريبات</h2>';
-            train.forEach(i => {
-                th += `<div class="glass-card">
+            let tH = '<h2 style="color:var(--gold)">لقطات التدريب</h2>';
+            train?.forEach(i => {
+                tH += `<div class="glass-card">
                     ${i.media_type === 'video' ? `<video src="${i.media_url}" controls></video>` : `<img src="${i.media_url}" class="news-img">`}
-                    <h3>${i.title}</h3></div>`;
+                    <h3>${i.title}</h3><p>${i.content}</p></div>`;
             });
-            document.getElementById('trainingFeed').innerHTML = th;
+            document.getElementById('trainingFeed').innerHTML = tH;
+
+            // لاعبين
+            const { data: pWords } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
+            let pH = '<h2 style="color:var(--gold)">كلمة اللاعبين</h2>';
+            pWords?.forEach(i => {
+                pH += `<div class="glass-card">
+                    <div class="player-header">
+                        <img src="${i.player_img || 'https://via.placeholder.com/60'}" class="player-circle">
+                        <h3 style="margin:0">${i.title}</h3>
+                    </div>
+                    <p style="font-style:italic">" ${i.content} "</p></div>`;
+            });
+            document.getElementById('playersFeed').innerHTML = pH;
         }
 
-        window.onload = loadFeed;
+        window.onload = loadAll;
     </script>
 </body>
 </html>
