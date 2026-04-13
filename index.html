@@ -24,28 +24,47 @@
         
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 25px; position: relative; }
         
+        .info-btn { position: fixed; bottom: 25px; right: 25px; width: 50px; height: 50px; background: var(--gold); color: black; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; z-index: 4000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s; }
+        .info-btn:hover { transform: scale(1.1); background: white; }
+
+        #aboutModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 500px; background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(25px); padding: 30px; border-radius: 25px; border: 1px solid var(--gold); z-index: 5000; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 4999; }
+
         .vote-card { display: flex; align-items: center; justify-content: space-between; background: rgba(212, 167, 87, 0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .vote-btn { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
 
         .news-img, video { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
         .player-circle { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #111; }
         
-        .admin-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; }
-        .fa-trash { color: #ff5555; cursor: pointer; font-size: 18px; }
-        .select-box { position: absolute; top: 15px; right: 15px; width: 22px; height: 22px; accent-color: var(--gold); }
-
-        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff4444; color: white; padding: 15px 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; }
+        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff4444; color: white; padding: 15px 25px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .bulk-bar.active { bottom: 30px; }
 
         .btn-action { background: var(--gold); color: black; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; font-family: 'Cairo'; }
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Cairo'; }
+        .select-box { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; accent-color: var(--gold); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div id="bulkBar" class="bulk-bar"><span id="bulkCount">0 محدد</span><button onclick="bulkDelete()" style="background:white; color:#ff4444; border:none; padding:8px 20px; border-radius:10px; font-weight:bold;">حذف المختار</button></div>
+    <div class="info-btn" onclick="openAbout()"><i class="fas fa-question"></i></div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeAbout()"></div>
+    <div id="aboutModal">
+        <h2 style="color:var(--gold); margin-top:0;">حول نادي AFC</h2>
+        <div id="aboutContent" style="line-height: 1.6; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">جاري تحميل المعلومات...</div>
+        <div id="adminAboutControls" style="display:none;">
+            <textarea id="aboutEditField" rows="4" placeholder="تعديل نص التعريف..."></textarea>
+            <button class="btn-action" onclick="saveAbout()">حفظ التعديل</button>
+        </div>
+        <button onclick="closeAbout()" style="background:none; border:none; color:white; opacity:0.5; margin-top:10px; cursor:pointer;">إغلاق</button>
+    </div>
+
+    <div id="bulkBar" class="bulk-bar">
+        <span id="bulkCount">0 محدد</span>
+        <button onclick="bulkDelete()" style="background:white; color:#ff4444; border:none; padding:8px 20px; border-radius:10px; font-weight:bold;">حذف المختار</button>
+    </div>
 
     <div id="sideNav" class="side-nav">
         <div style="padding:25px;"><i class="fas fa-times" onclick="toggleNav()" style="font-size:25px; color:var(--gold); cursor:pointer;"></i></div>
@@ -54,11 +73,7 @@
         <div class="nav-item" onclick="switchPage('matches')">المباريات</div>
         <div class="nav-item" onclick="switchPage('players')">كلمة اللاعبين</div>
         <div class="nav-item" onclick="switchPage('votePage')">لاعب الشهر ⭐</div>
-        
-        <div id="playerOnlyNav" style="display:none; border-top: 1px solid var(--border);">
-            <div class="nav-item" onclick="switchPage('exerciseTimes')"><i class="fas fa-clock"></i> أوقات التمرين</div>
-        </div>
-
+        <div id="playerOnlyNav" style="display:none; border-top: 1px solid var(--border);"><div class="nav-item" onclick="switchPage('exerciseTimes')"><i class="fas fa-clock"></i> أوقات التمرين</div></div>
         <div id="adminMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('adminHub')">لوحة المدير</div></div>
         <div id="playerMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('playerWrite')">كتابة كلمة</div></div>
     </div>
@@ -84,11 +99,11 @@
                     <option value="news">خبر جديد</option>
                     <option value="training">لقطة تدريب</option>
                     <option value="matches">مباراة</option>
-                    <option value="training_times">وقت تمرين (خاص)</option>
+                    <option value="training_times">وقت تمرين</option>
                     <option value="player_of_month">مرشح لاعب الشهر</option>
                 </select>
                 <input type="text" id="mTitle" placeholder="العنوان أو اسم اللاعب">
-                <div id="fileArea"><input type="file" id="mFile"></div>
+                <input type="file" id="mFile">
                 <div id="extraFields"></div>
                 <textarea id="mContent" rows="4" placeholder="التفاصيل"></textarea>
                 <button id="mainBtn" class="btn-action" onclick="publishWithFile('admin')">نشر الآن</button>
@@ -99,7 +114,7 @@
             <div class="glass-card">
                 <h2 style="color:var(--gold)">كلمة اللاعب</h2>
                 <input type="text" id="pName" placeholder="اسمك">
-                <input type="file" id="pImgFile" accept="image/*">
+                <input type="file" id="pImgFile">
                 <textarea id="pText" rows="4" placeholder="رسالتك..."></textarea>
                 <button id="playerBtn" class="btn-action" onclick="publishWithFile('player')">نشر الكلمة</button>
             </div>
@@ -116,15 +131,11 @@
         let selectedIds = [];
         let currentTable = "news";
 
-        // إعدادات الحسابات الجديدة
         const validUsers = {
             "Admin_AFC": { pass: "AFC_MGR2024", role: "admin" },
-            "Player_1": { pass: "P1_2024", role: "player" },
-            "Player_2": { pass: "P2_2024", role: "player" },
-            "Player_3": { pass: "P3_2024", role: "player" },
-            "Player_4": { pass: "P4_2024", role: "player" },
-            "Player_5": { pass: "P5_2024", role: "player" },
-            "Player_6": { pass: "P6_2024", role: "player" }
+            "Player_1": { pass: "P1_2024", role: "player" }, "Player_2": { pass: "P2_2024", role: "player" },
+            "Player_3": { pass: "P3_2024", role: "player" }, "Player_4": { pass: "P4_2024", role: "player" },
+            "Player_5": { pass: "P5_2024", role: "player" }, "Player_6": { pass: "P6_2024", role: "player" }
         };
 
         function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
@@ -137,141 +148,113 @@
             toggleNav(); 
         }
 
-        function toggleInputs() {
-            const t = document.getElementById('targetTab').value;
-            let extra = document.getElementById('extraFields');
-            extra.innerHTML = '';
-            if(t === 'matches' || t === 'training_times') {
-                extra.innerHTML = `<input type="text" id="ex1" placeholder="${t==='matches'?'الملعب':'المكان'}"><input type="text" id="ex2" placeholder="${t==='matches'?'الوقت':'اليوم والساعة'}">`;
-            }
+        function handleLogin() {
+            if(userRole !== "guest") { if(confirm("هل تريد تسجيل الخروج؟")) { localStorage.clear(); location.reload(); } return; }
+            let u = prompt("اسم المستخدم:"), p = prompt("كلمة المرور:");
+            if (validUsers[u] && validUsers[u].pass === p) {
+                localStorage.setItem('role', validUsers[u].role);
+                location.reload();
+            } else alert("خطأ في البيانات!");
         }
 
-        function handleLogin() {
-            if(userRole !== "guest") {
-                if(confirm("هل تريد تسجيل الخروج؟")) {
-                    localStorage.removeItem('role');
-                    localStorage.removeItem('activeUser');
-                    location.reload();
-                }
-                return;
+        async function openAbout() {
+            document.getElementById('aboutModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+            const { data } = await _supabase.from('club_info').select('content').eq('id', 1).single();
+            if (data) {
+                document.getElementById('aboutContent').innerText = data.content;
+                document.getElementById('aboutEditField').value = data.content;
             }
-            
-            let u = prompt("اسم المستخدم:");
-            let p = prompt("كلمة المرور:");
-            
-            if (validUsers[u] && validUsers[u].pass === p) {
-                userRole = validUsers[u].role;
-                localStorage.setItem('role', userRole);
-                localStorage.setItem('activeUser', u);
-                alert(`مرحباً ${u}، تم الدخول بنجاح`);
-                location.reload();
-            } else {
-                alert("خطأ في اسم المستخدم أو كلمة المرور!");
-            }
+            if (userRole === 'admin') document.getElementById('adminAboutControls').style.display = 'block';
+        }
+        function closeAbout() { document.getElementById('aboutModal').style.display = 'none'; document.getElementById('modalOverlay').style.display = 'none'; }
+        async function saveAbout() {
+            const txt = document.getElementById('aboutEditField').value;
+            await _supabase.from('club_info').upsert({ id: 1, content: txt });
+            alert("تم التحديث!"); openAbout();
         }
 
         async function uploadFile(file) {
             if(!file) return null;
-            const cleanName = Date.now() + "_" + file.name.replace(/[^\w.]/g, "_");
-            const { data, error } = await _supabase.storage.from('media').upload(cleanName, file);
-            if (error) throw error;
-            return _supabase.storage.from('media').getPublicUrl(cleanName).data.publicUrl;
+            const name = Date.now() + "_" + file.name.replace(/[^\w.]/g, "_");
+            await _supabase.storage.from('media').upload(name, file);
+            return _supabase.storage.from('media').getPublicUrl(name).data.publicUrl;
         }
 
         async function publishWithFile(role) {
             const btn = role === 'admin' ? document.getElementById('mainBtn') : document.getElementById('playerBtn');
-            btn.disabled = true; btn.innerText = "جاري الرفع...";
+            btn.innerText = "جاري الرفع..."; btn.disabled = true;
             try {
                 if(role === 'admin') {
                     const table = document.getElementById('targetTab').value;
-                    const file = document.getElementById('mFile').files[0];
-                    const url = await uploadFile(file);
-                    let payload = { title: document.getElementById('mTitle').value, content: document.getElementById('mContent').value };
-                    
-                    if(table === 'news') payload.image_url = url;
-                    else if(table === 'training') { payload.media_url = url; payload.media_type = file?.type.includes('video') ? 'video' : 'image'; }
-                    else if(table === 'matches') { payload.venue = document.getElementById('ex1').value; payload.match_time = document.getElementById('ex2').value; }
-                    else if(table === 'training_times') { payload.t_date = document.getElementById('ex1').value; payload.t_time = document.getElementById('ex2').value; }
-                    else if(table === 'player_of_month') { 
-                        const { error } = await _supabase.from('player_of_month').insert([{ player_name: payload.title, player_img: url, votes: 0 }]);
-                        if(error) throw error;
-                        location.reload(); return;
-                    }
-                    await _supabase.from(table).insert([payload]);
+                    const url = await uploadFile(document.getElementById('mFile').files[0]);
+                    let p = { title: document.getElementById('mTitle').value, content: document.getElementById('mContent').value };
+                    if(table==='news') p.image_url = url;
+                    else if(table==='training') { p.media_url = url; p.media_type = document.getElementById('mFile').files[0]?.type.includes('video') ? 'video' : 'image'; }
+                    else if(table==='matches') { p.venue = document.getElementById('ex1').value; p.match_time = document.getElementById('ex2').value; }
+                    else if(table==='training_times') { p.t_date = document.getElementById('ex1').value; p.t_time = document.getElementById('ex2').value; }
+                    else if(table==='player_of_month') { await _supabase.from('player_of_month').insert([{ player_name: p.title, player_img: url, votes: 0 }]); location.reload(); return; }
+                    await _supabase.from(table).insert([p]);
                 } else {
-                    const file = document.getElementById('pImgFile').files[0];
-                    const url = await uploadFile(file);
+                    const url = await uploadFile(document.getElementById('pImgFile').files[0]);
                     await _supabase.from('players_word').insert([{ title: document.getElementById('pName').value, content: document.getElementById('pText').value, player_img: url }]);
                 }
                 location.reload();
-            } catch (e) { alert("خطأ في النشر!"); btn.disabled = false; btn.innerText = "إعادة المحاولة"; }
+            } catch (e) { alert("خطأ في النشر!"); btn.disabled = false; btn.innerText = "نشر الآن"; }
         }
 
-        async function addVote(id, currentVotes) {
-            const { error } = await _supabase.from('player_of_month').update({ votes: parseInt(currentVotes) + 1 }).eq('id', id);
-            if(!error) { alert("تم التصويت!"); loadAll(); }
-        }
+        async function addVote(id, votes) { await _supabase.from('player_of_month').update({ votes: votes + 1 }).eq('id', id); loadAll(); }
+        async function deleteItem(t, id) { if(confirm("حذف؟")) { await _supabase.from(t).delete().eq('id', id); loadAll(); } }
+        function updateSelection(c, id) { if(c.checked) selectedIds.push(id); else selectedIds = selectedIds.filter(x => x !== id); document.getElementById('bulkBar').classList.toggle('active', selectedIds.length > 0); document.getElementById('bulkCount').innerText = `${selectedIds.length} محدد`; }
+        async function bulkDelete() { if(confirm("حذف المختار؟")) { await _supabase.from(currentTable).delete().in('id', selectedIds); location.reload(); } }
 
         async function loadAll() {
             // الأخبار
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
-            let nH = '<h2>آخر الأخبار</h2>';
-            news?.forEach(i => nH += `<div class="glass-card">${userRole==='admin'?`<input type="checkbox" class="select-box" onchange="updateSelection(this,'${i.id}')"><div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('news','${i.id}')"></i></div>`:''}${i.image_url?`<img src="${i.image_url}" class="news-img">`:''}<h3>${i.title}</h3><p>${i.content}</p></div>`);
-            document.getElementById('newsFeed').innerHTML = nH;
+            let nH = ''; news?.forEach(i => nH += `<div class="glass-card">${userRole==='admin'?`<input type="checkbox" class="select-box" onchange="updateSelection(this,'${i.id}')"><i class="fas fa-trash" style="position:absolute; left:40px; top:15px; color:red; cursor:pointer;" onclick="deleteItem('news','${i.id}')"></i>`:''}${i.image_url?`<img src="${i.image_url}" class="news-img">`:''}<h3>${i.title}</h3><p>${i.content}</p></div>`);
+            document.getElementById('newsFeed').innerHTML = nH || '<p>لا توجد أخبار</p>';
 
             // لاعب الشهر
             const { data: vts } = await _supabase.from('player_of_month').select('*').order('votes', { ascending: false });
-            let vH = '';
-            vts?.forEach(i => vH += `<div class="vote-card"><div style="display:flex; align-items:center; gap:15px;"><img src="${i.player_img}" class="player-circle"><div><b>${i.player_name}</b><br><small>${i.votes} صوت</small></div></div><div style="display:flex; align-items:center; gap:10px;"><button class="vote-btn" onclick="addVote('${i.id}', ${i.votes})">تصويت</button>${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('player_of_month','${i.id}')"></i>`:''}</div></div>`);
+            let vH = ''; vts?.forEach(i => vH += `<div class="vote-card"><div style="display:flex; align-items:center; gap:10px;"><img src="${i.player_img}" class="player-circle"><div><b>${i.player_name}</b><br><small>${i.votes} صوت</small></div></div><div style="display:flex; align-items:center; gap:10px;"><button class="vote-btn" onclick="addVote('${i.id}',${i.votes})">تصويت</button>${userRole==='admin'?`<i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteItem('player_of_month','${i.id}')"></i>`:''}</div></div>`);
             document.getElementById('voteFeed').innerHTML = vH || '<p>لا يوجد مرشحين</p>';
-
-            // أوقات التمرين
-            const { data: tt } = await _supabase.from('training_times').select('*').order('created_at', { ascending: false });
-            let ttH = '';
-            tt?.forEach(i => ttH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('training_times','${i.id}')"></i>`:''}<h3>${i.title}</h3><p><i class="fas fa-calendar"></i> ${i.t_date} | <i class="fas fa-clock"></i> ${i.t_time}</p></div>`);
-            document.getElementById('exerciseFeed').innerHTML = ttH;
 
             // المباريات
             const { data: matches } = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
-            let mH = '<h2>جدول المباريات</h2>';
-            matches?.forEach(i => mH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i>`:''}<h3>${i.title}</h3><p>${i.venue} - ${i.match_time}</p></div>`);
-            document.getElementById('matchesFeed').innerHTML = mH;
+            let mH = ''; matches?.forEach(i => mH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" style="position:absolute; left:15px; color:red; cursor:pointer;" onclick="deleteItem('matches','${i.id}')"></i>`:''}<h3>${i.title}</h3><p><i class="fas fa-map-marker-alt"></i> ${i.venue}<br><i class="fas fa-clock"></i> ${i.match_time}</p><p>${i.content}</p></div>`);
+            document.getElementById('matchesFeed').innerHTML = mH || '<p>لا توجد مباريات</p>';
 
-            // كلمة لاعب
+            // كلمة اللاعبين
             const { data: players } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
-            let pH = '<h2>كلمة اللاعبين</h2>';
-            players?.forEach(i => pH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i>`:''}<div class="player-header"><img src="${i.player_img}" class="player-circle"><h3>${i.title}</h3></div><p>" ${i.content} "</p></div>`);
-            document.getElementById('playersFeed').innerHTML = pH;
+            let pH = ''; players?.forEach(i => pH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" style="position:absolute; left:15px; color:red; cursor:pointer;" onclick="deleteItem('players_word','${i.id}')"></i>`:''}<div style="display:flex; align-items:center; gap:10px;"><img src="${i.player_img}" class="player-circle"><h3>${i.title}</h3></div><p>" ${i.content} "</p></div>`);
+            document.getElementById('playersFeed').innerHTML = pH || '<p>لا توجد كلمات</p>';
 
             // الميديا
             const { data: media } = await _supabase.from('training').select('*').order('created_at', { ascending: false });
-            let tH = '<h2>لقطات التدريب</h2>';
-            media?.forEach(i => tH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" onclick="deleteItem('training','${i.id}')"></i>`:''}${i.media_type==='video'?`<video src="${i.media_url}" controls></video>`:`<img src="${i.media_url}" class="news-img">`}<h3>${i.title}</h3></div>`);
-            document.getElementById('trainingFeed').innerHTML = tH;
+            let tH = ''; media?.forEach(i => tH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" style="position:absolute; left:15px; color:red; cursor:pointer;" onclick="deleteItem('training','${i.id}')"></i>`:''}${i.media_type==='video'?`<video src="${i.media_url}" controls></video>`:`<img src="${i.media_url}" class="news-img">`}<h3>${i.title}</h3></div>`);
+            document.getElementById('trainingFeed').innerHTML = tH || '<p>لا توجد لقطات</p>';
+
+            // أوقات التمرين
+            const { data: tt } = await _supabase.from('training_times').select('*').order('created_at', { ascending: false });
+            let ttH = ''; tt?.forEach(i => ttH += `<div class="glass-card">${userRole==='admin'?`<i class="fas fa-trash" style="position:absolute; left:15px; color:red; cursor:pointer;" onclick="deleteItem('training_times','${i.id}')"></i>`:''}<h3>${i.title}</h3><p><i class="fas fa-calendar"></i> ${i.t_date} | <i class="fas fa-clock"></i> ${i.t_time}</p></div>`);
+            document.getElementById('exerciseFeed').innerHTML = ttH || '<p>لا توجد تمارين</p>';
         }
 
-        function updateSelection(checkbox, id) {
-            if(checkbox.checked) selectedIds.push(id); else selectedIds = selectedIds.filter(i => i !== id);
-            document.getElementById('bulkBar').classList.toggle('active', selectedIds.length > 0);
-            document.getElementById('bulkCount').innerText = `${selectedIds.length} محدد`;
+        function toggleInputs() {
+            const t = document.getElementById('targetTab').value;
+            document.getElementById('extraFields').innerHTML = (t==='matches'||t==='training_times') ? `<input type="text" id="ex1" placeholder="المكان/الملعب"><input type="text" id="ex2" placeholder="الزمان/الوقت">` : '';
         }
 
-        async function deleteItem(t, id) { if(confirm("حذف؟")) { await _supabase.from(t).delete().eq('id', id); location.reload(); } }
-        async function bulkDelete() { if(confirm("حذف المختار؟")) { await _supabase.from(currentTable).delete().in('id', selectedIds); location.reload(); } }
-
-        async function checkUser() {
-            const savedRole = localStorage.getItem('role');
-            if (savedRole) {
-                userRole = savedRole;
-                document.getElementById('userIcon').style.color = (userRole === 'admin') ? "#55ff55" : "#D4A757";
+        window.onload = () => {
+            userRole = localStorage.getItem('role') || 'guest';
+            if(userRole !== 'guest') {
                 document.getElementById('playerOnlyNav').style.display = 'block';
-                if(userRole === 'admin') document.getElementById('adminMenu').style.display = 'block';
-                if(userRole === 'player') document.getElementById('playerMenu').style.display = 'block';
+                document.getElementById('userIcon').style.color = userRole==='admin'?'#55ff55':'#D4A757';
+                if(userRole==='admin') document.getElementById('adminMenu').style.display = 'block';
+                if(userRole==='player') document.getElementById('playerMenu').style.display = 'block';
             }
             loadAll();
-        }
-
-        window.onload = checkUser;
+        };
     </script>
 </body>
 </html>
