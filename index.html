@@ -11,15 +11,12 @@
     <style>
         :root { --gold: #D4A757; --border: rgba(255, 255, 255, 0.1); }
         body { font-family: 'Cairo', sans-serif; margin: 0; background: #050505 url('017714e7a5037887c750e844f41e7d60.jpg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: -1; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: -1; }
         
-        /* الهيدر */
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
         
-        /* القائمة الكريستالية */
-        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .nav-item:hover { background: rgba(212, 167, 87, 0.1); }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-text { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); font-weight: bold; }
 
         .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
@@ -28,14 +25,13 @@
         
         .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; }
         
-        .btn-action { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; border-radius: 10px; }
+        .btn-action { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; border-radius: 10px; font-family: 'Cairo'; }
 
-        /* أيقونات التحكم للإدارة */
-        .admin-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 10px; }
-        .admin-controls i { cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .fa-trash { color: #ff5555; }
-        .fa-edit { color: #55ff55; }
+        .admin-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; z-index: 10; }
+        .admin-controls i { cursor: pointer; font-size: 18px; transition: 0.3s; }
+        .fa-trash { color: #ff5555; } .fa-edit { color: #55ff55; }
+        .match-info { font-size: 13px; color: var(--gold); margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -48,23 +44,16 @@
             <div class="nav-item" onclick="switchPage('news')"><span class="nav-text">الأخبار</span></div>
             <div class="nav-item" onclick="switchPage('matches')"><span class="nav-text">المباريات</span></div>
             <div class="nav-item" onclick="switchPage('players')"><span class="nav-text">كلمة اللاعبين</span></div>
-            
-            <div id="adminMenu" style="display:none; border-top:1px solid var(--gold); margin-top:10px;">
-                <div class="nav-item" onclick="switchPage('adminHub')"><span class="nav-text">لوحة التحكم (مدير)</span></div>
-            </div>
-            <div id="playerMenu" style="display:none; border-top:1px solid var(--gold); margin-top:10px;">
-                <div class="nav-item" onclick="switchPage('playerWrite')"><span class="nav-text">كتابة كلمة (لاعب)</span></div>
-            </div>
+            <div id="adminMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('adminHub')"><span class="nav-text">لوحة التحكم (مدير)</span></div></div>
+            <div id="playerMenu" style="display:none; border-top:1px solid var(--gold);"><div class="nav-item" onclick="switchPage('playerWrite')"><span class="nav-text">كتابة كلمة (لاعب)</span></div></div>
         </div>
         <div style="padding: 20px; text-align: center; font-size: 12px; color: var(--gold);" id="userStatus">زائر</div>
     </div>
 
     <header>
-        <button onclick="toggleNav()" style="background:none; border:none;"><i class="fas fa-bars" style="color:var(--gold); font-size:20px;"></i></button>
-        <div style="text-align:center;">
-            <img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:45px; border-radius:50%; border:1px solid var(--gold);">
-        </div>
-        <button onclick="handleLogin()" style="background:none; border:none;"><i class="fas fa-user-circle" style="color:var(--gold); font-size:25px;"></i></button>
+        <button onclick="toggleNav()" style="background:none; border:none;"><i class="fas fa-bars" style="color:var(--gold); font-size:22px;"></i></button>
+        <div style="text-align:center;"><img src="PSX_20260412_121049_preview_rev_1-1_preview_rev_1.jpg" style="width:45px; border-radius:50%; border:1px solid var(--gold);"></div>
+        <button onclick="handleLogin()" style="background:none; border:none;"><i class="fas fa-user-circle" id="userIcon" style="color:var(--gold); font-size:28px;"></i></button>
     </header>
 
     <div class="container">
@@ -74,9 +63,16 @@
 
         <section id="adminHub" class="page">
             <div class="glass-card">
-                <h2 style="color:var(--gold)">إضافة محتوى</h2>
-                <select id="targetTable"><option value="news">خبر جديد</option><option value="matches">مباراة جديدة</option></select>
-                <input type="text" id="adminTitle" placeholder="العنوان">
+                <h2 style="color:var(--gold)">إضافة محتوى جديد</h2>
+                <select id="targetTable" onchange="checkMatchType()">
+                    <option value="news">خبر</option>
+                    <option value="matches">مباراة</option>
+                </select>
+                <input type="text" id="adminTitle" placeholder="العنوان / الفرق">
+                <div id="matchFields" style="display:none;">
+                    <input type="text" id="matchVenue" placeholder="الملعب">
+                    <input type="text" id="matchTime" placeholder="الوقت (مثلاً 4:00 مساءً)">
+                </div>
                 <textarea id="adminContent" rows="4" placeholder="التفاصيل"></textarea>
                 <button class="btn-action" onclick="publish('admin')">نشر</button>
             </div>
@@ -84,10 +80,10 @@
 
         <section id="playerWrite" class="page">
             <div class="glass-card">
-                <h2 style="color:var(--gold)">اكتب كلمتك كلاعب</h2>
+                <h2 style="color:var(--gold)">كلمة لاعب</h2>
                 <input type="text" id="playerTitle" placeholder="اسمك">
-                <textarea id="playerContent" rows="4" placeholder="رسالتك لجمهور النادي..."></textarea>
-                <button class="btn-action" onclick="publish('player')">نشر الآن</button>
+                <textarea id="playerContent" rows="4" placeholder="رسالتك..."></textarea>
+                <button class="btn-action" onclick="publish('player')">نشر</button>
             </div>
         </section>
     </div>
@@ -102,25 +98,28 @@
 
         function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
         function switchPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); toggleNav(); }
+        function checkMatchType() { document.getElementById('matchFields').style.display = document.getElementById('targetTable').value === 'matches' ? 'block' : 'none'; }
 
         function handleLogin() {
-            if(userRole !== "guest") { if(confirm("خروج؟")) location.reload(); return; }
+            if(userRole !== "guest") { if(confirm("هل تريد تسجيل الخروج؟")) location.reload(); return; }
             let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
             if(u === "QEVC12" && p === "MGR12") {
                 userRole = "admin";
                 document.getElementById('adminMenu').style.display = 'block';
                 document.getElementById('userStatus').innerText = "المدير العام";
-                alert("مرحباً أيها المدير");
+                document.getElementById('userIcon').style.color = "#55ff55";
+                loadAll(); switchPage('adminHub');
             } else if(u === "PLY11" && p === "BGHU3") {
                 userRole = "player";
                 document.getElementById('playerMenu').style.display = 'block';
                 document.getElementById('userStatus').innerText = "لاعب الفريق";
-                alert("مرحباً بك يا كابتن");
-            } else { alert("بيانات خاطئة!"); }
+                document.getElementById('userIcon').style.color = "#D4A757";
+                loadAll(); switchPage('playerWrite');
+            } else { alert("خطأ!"); }
         }
 
         async function loadAll() {
-            // تحميل الأخبار مع أزرار التحكم
+            // أخبار
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
             let newsHTML = '<h2 style="color:var(--gold)">آخر الأخبار</h2>';
             news.forEach(i => {
@@ -131,13 +130,26 @@
             });
             document.getElementById('newsFeed').innerHTML = newsHTML;
 
-            // تحميل كلمة اللاعبين
+            // مباريات
+            const { data: matches } = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
+            let matchHTML = '<h2 style="color:var(--gold)">جدول المباريات</h2>';
+            matches.forEach(i => {
+                matchHTML += `<div class="glass-card">
+                    ${userRole === 'admin' ? `<div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i></div>` : ''}
+                    <h3>${i.title}</h3>
+                    <div class="match-info"><i class="fas fa-map-marker-alt"></i> ${i.venue || 'غير محدد'} | <i class="fas fa-clock"></i> ${i.match_time || 'غير محدد'}</div>
+                    <p style="margin-top:10px; opacity:0.8">${i.content}</p>
+                </div>`;
+            });
+            document.getElementById('matchesFeed').innerHTML = matchHTML;
+
+            // كلمة لاعبين
             const { data: pWords } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
-            let pHTML = '<h2 style="color:var(--gold)">كلمات اللاعبين</h2>';
+            let pHTML = '<h2 style="color:var(--gold)">كلمة اللاعبين</h2>';
             pWords.forEach(i => {
                 pHTML += `<div class="glass-card">
                     ${userRole === 'admin' ? `<div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i></div>` : ''}
-                    <h3 style="color:var(--gold)">${i.title}</h3><p>" ${i.content} "</p>
+                    <h3 style="color:var(--gold)">${i.title}</h3><p style="font-style:italic">" ${i.content} "</p>
                 </div>`;
             });
             document.getElementById('playersFeed').innerHTML = pHTML;
@@ -149,23 +161,26 @@
             let content = (type === 'admin') ? document.getElementById('adminContent').value : document.getElementById('playerContent').value;
 
             if(!title || !content) return alert("أكمل البيانات");
-            const { error } = await _supabase.from(table).insert([{ title, content }]);
-            if(!error) { alert("تم النشر!"); location.reload(); }
+            
+            let payload = { title, content };
+            if(table === 'matches') {
+                payload.venue = document.getElementById('matchVenue').value;
+                payload.match_time = document.getElementById('matchTime').value;
+            }
+
+            const { error } = await _supabase.from(table).insert([payload]);
+            if(!error) { alert("تم النشر!"); location.reload(); } else { alert("خطأ في النشر!"); }
         }
 
         async function deleteItem(table, id) {
-            if(!confirm("هل أنت متأكد من الحذف؟")) return;
-            const { error } = await _supabase.from(table).delete().eq('id', id);
-            if(!error) location.reload();
+            if(!confirm("حذف نهائي؟")) return;
+            await _supabase.from(table).delete().eq('id', id);
+            location.reload();
         }
 
-        async function editItem(table, id, oldTitle, oldContent) {
-            let nTitle = prompt("العنوان الجديد:", oldTitle);
-            let nContent = prompt("المحتوى الجديد:", oldContent);
-            if(nTitle && nContent) {
-                await _supabase.from(table).update({ title: nTitle, content: nContent }).eq('id', id);
-                location.reload();
-            }
+        async function editItem(table, id, t, c) {
+            let nT = prompt("العنوان الجديد:", t); let nC = prompt("المحتوى الجديد:", c);
+            if(nT && nC) { await _supabase.from(table).update({ title: nT, content: nC }).eq('id', id); location.reload(); }
         }
 
         window.onload = loadAll;
