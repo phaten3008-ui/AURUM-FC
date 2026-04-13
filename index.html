@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFC | Elite Portal</title>
+    <title>AFC | Bulk Management</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cairo:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,29 +14,41 @@
         body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: -1; }
         
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        
-        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
+        .side-nav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); border-left: 1px solid rgba(255,255,255,0.1); overflow-x: hidden; transition: 0.5s ease; display: flex; flex-direction: column; }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-text { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); font-weight: bold; }
 
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px 100px 20px; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.5s ease; }
         
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; transition: 0.3s; }
+        .glass-card.selected { border-color: var(--gold); background: rgba(212, 167, 87, 0.05); }
+        
+        /* مربعات التحديد */
+        .select-box { position: absolute; top: 20px; right: 20px; width: 20px; height: 20px; accent-color: var(--gold); cursor: pointer; display: none; }
         
         .btn-action { background: var(--gold); color: black; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; border-radius: 10px; font-family: 'Cairo'; }
 
         .admin-controls { position: absolute; top: 15px; left: 15px; display: flex; gap: 15px; z-index: 10; }
-        .admin-controls i { cursor: pointer; font-size: 18px; transition: 0.3s; }
+        .admin-controls i { cursor: pointer; font-size: 18px; transition: 0.3s; opacity: 0.7; }
+        .admin-controls i:hover { opacity: 1; }
         .fa-trash { color: #ff5555; } .fa-edit { color: #55ff55; }
-        .match-info { font-size: 13px; color: var(--gold); margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+
+        /* شريط الحذف الجماعي السفلي */
+        .bulk-bar { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #ff5555; color: white; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.5s; z-index: 3000; box-shadow: 0 5px 20px rgba(255,85,85,0.4); }
+        .bulk-bar.active { bottom: 30px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <div id="bulkBar" class="bulk-bar">
+        <span id="bulkCount">تم تحديد 0 عناصر</span>
+        <button onclick="bulkDelete()" style="background:white; color:#ff5555; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">حذف الكل</button>
+    </div>
 
     <div id="sideNav" class="side-nav">
         <div style="padding: 30px;"><i class="fas fa-times" onclick="toggleNav()" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i></div>
@@ -71,7 +83,7 @@
                 <input type="text" id="adminTitle" placeholder="العنوان / الفرق">
                 <div id="matchFields" style="display:none;">
                     <input type="text" id="matchVenue" placeholder="الملعب">
-                    <input type="text" id="matchTime" placeholder="الوقت (مثلاً 4:00 مساءً)">
+                    <input type="text" id="matchTime" placeholder="الوقت">
                 </div>
                 <textarea id="adminContent" rows="4" placeholder="التفاصيل"></textarea>
                 <button class="btn-action" onclick="publish('admin')">نشر</button>
@@ -95,27 +107,54 @@
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let userRole = "guest";
+        let selectedIds = [];
+        let currentTable = "news"; // لتعقب الجدول الحالي للحذف الجماعي
 
         function toggleNav() { const n = document.getElementById("sideNav"); n.style.width = n.style.width === "280px" ? "0" : "280px"; }
-        function switchPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); toggleNav(); }
+        function switchPage(id) { 
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); 
+            document.getElementById(id).classList.add('active'); 
+            if(['news', 'matches', 'players'].includes(id)) currentTable = (id === 'players') ? 'players_word' : id;
+            clearSelection();
+            toggleNav(); 
+        }
         function checkMatchType() { document.getElementById('matchFields').style.display = document.getElementById('targetTable').value === 'matches' ? 'block' : 'none'; }
 
         function handleLogin() {
-            if(userRole !== "guest") { if(confirm("هل تريد تسجيل الخروج؟")) location.reload(); return; }
+            if(userRole !== "guest") { if(confirm("خروج؟")) location.reload(); return; }
             let u = prompt("المستخدم:"); let p = prompt("كلمة السر:");
             if(u === "QEVC12" && p === "MGR12") {
                 userRole = "admin";
                 document.getElementById('adminMenu').style.display = 'block';
                 document.getElementById('userStatus').innerText = "المدير العام";
-                document.getElementById('userIcon').style.color = "#55ff55";
                 loadAll(); switchPage('adminHub');
             } else if(u === "PLY11" && p === "BGHU3") {
                 userRole = "player";
                 document.getElementById('playerMenu').style.display = 'block';
                 document.getElementById('userStatus').innerText = "لاعب الفريق";
-                document.getElementById('userIcon').style.color = "#D4A757";
                 loadAll(); switchPage('playerWrite');
             } else { alert("خطأ!"); }
+        }
+
+        // تحديث الاختيارات
+        function updateSelection(checkbox, id) {
+            if(checkbox.checked) selectedIds.push(id);
+            else selectedIds = selectedIds.filter(i => i !== id);
+            
+            const bar = document.getElementById('bulkBar');
+            const count = document.getElementById('bulkCount');
+            
+            if(selectedIds.length > 0) {
+                bar.classList.add('active');
+                count.innerText = `تم تحديد ${selectedIds.length} عنصر`;
+            } else {
+                bar.classList.remove('active');
+            }
+        }
+
+        function clearSelection() {
+            selectedIds = [];
+            document.getElementById('bulkBar').classList.remove('active');
         }
 
         async function loadAll() {
@@ -123,8 +162,11 @@
             const { data: news } = await _supabase.from('news').select('*').order('created_at', { ascending: false });
             let newsHTML = '<h2 style="color:var(--gold)">آخر الأخبار</h2>';
             news.forEach(i => {
-                newsHTML += `<div class="glass-card">
-                    ${userRole === 'admin' ? `<div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('news','${i.id}')"></i><i class="fas fa-edit" onclick="editItem('news','${i.id}','${i.title}','${i.content}')"></i></div>` : ''}
+                newsHTML += `<div class="glass-card" id="card-${i.id}">
+                    ${userRole === 'admin' ? `
+                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
+                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('news','${i.id}')"></i><i class="fas fa-edit" onclick="editItem('news','${i.id}','${i.title}','${i.content}')"></i></div>
+                    ` : ''}
                     <h3>${i.title}</h3><p>${i.content}</p>
                 </div>`;
             });
@@ -132,55 +174,62 @@
 
             // مباريات
             const { data: matches } = await _supabase.from('matches').select('*').order('created_at', { ascending: false });
-            let matchHTML = '<h2 style="color:var(--gold)">جدول المباريات</h2>';
+            let mHTML = '<h2 style="color:var(--gold)">جدول المباريات</h2>';
             matches.forEach(i => {
-                matchHTML += `<div class="glass-card">
-                    ${userRole === 'admin' ? `<div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i></div>` : ''}
+                mHTML += `<div class="glass-card">
+                    ${userRole === 'admin' ? `
+                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
+                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('matches','${i.id}')"></i></div>
+                    ` : ''}
                     <h3>${i.title}</h3>
-                    <div class="match-info"><i class="fas fa-map-marker-alt"></i> ${i.venue || 'غير محدد'} | <i class="fas fa-clock"></i> ${i.match_time || 'غير محدد'}</div>
-                    <p style="margin-top:10px; opacity:0.8">${i.content}</p>
+                    <div style="color:var(--gold); font-size:13px;"><i class="fas fa-map-marker-alt"></i> ${i.venue} | <i class="fas fa-clock"></i> ${i.match_time}</div>
                 </div>`;
             });
-            document.getElementById('matchesFeed').innerHTML = matchHTML;
+            document.getElementById('matchesFeed').innerHTML = mHTML;
 
             // كلمة لاعبين
-            const { data: pWords } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
+            const { data: players } = await _supabase.from('players_word').select('*').order('created_at', { ascending: false });
             let pHTML = '<h2 style="color:var(--gold)">كلمة اللاعبين</h2>';
-            pWords.forEach(i => {
+            players.forEach(i => {
                 pHTML += `<div class="glass-card">
-                    ${userRole === 'admin' ? `<div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i></div>` : ''}
-                    <h3 style="color:var(--gold)">${i.title}</h3><p style="font-style:italic">" ${i.content} "</p>
+                    ${userRole === 'admin' ? `
+                        <input type="checkbox" class="select-box" style="display:block" onchange="updateSelection(this, '${i.id}')">
+                        <div class="admin-controls"><i class="fas fa-trash" onclick="deleteItem('players_word','${i.id}')"></i></div>
+                    ` : ''}
+                    <h3 style="color:var(--gold)">${i.title}</h3><p>"${i.content}"</p>
                 </div>`;
             });
             document.getElementById('playersFeed').innerHTML = pHTML;
+        }
+
+        async function bulkDelete() {
+            if(!confirm(`هل تريد حذف ${selectedIds.length} عناصر نهائياً؟`)) return;
+            const { error } = await _supabase.from(currentTable).delete().in('id', selectedIds);
+            if(!error) { alert("تم الحذف بنجاح"); location.reload(); }
+        }
+
+        async function deleteItem(table, id) {
+            if(!confirm("حذف؟")) return;
+            await _supabase.from(table).delete().eq('id', id);
+            location.reload();
+        }
+
+        async function editItem(table, id, t, c) {
+            let nT = prompt("العنوان:", t); let nC = prompt("المحتوى:", c);
+            if(nT && nC) { await _supabase.from(table).update({ title: nT, content: nC }).eq('id', id); location.reload(); }
         }
 
         async function publish(type) {
             let table = (type === 'admin') ? document.getElementById('targetTable').value : 'players_word';
             let title = (type === 'admin') ? document.getElementById('adminTitle').value : document.getElementById('playerTitle').value;
             let content = (type === 'admin') ? document.getElementById('adminContent').value : document.getElementById('playerContent').value;
-
-            if(!title || !content) return alert("أكمل البيانات");
-            
             let payload = { title, content };
             if(table === 'matches') {
                 payload.venue = document.getElementById('matchVenue').value;
                 payload.match_time = document.getElementById('matchTime').value;
             }
-
             const { error } = await _supabase.from(table).insert([payload]);
-            if(!error) { alert("تم النشر!"); location.reload(); } else { alert("خطأ في النشر!"); }
-        }
-
-        async function deleteItem(table, id) {
-            if(!confirm("حذف نهائي؟")) return;
-            await _supabase.from(table).delete().eq('id', id);
-            location.reload();
-        }
-
-        async function editItem(table, id, t, c) {
-            let nT = prompt("العنوان الجديد:", t); let nC = prompt("المحتوى الجديد:", c);
-            if(nT && nC) { await _supabase.from(table).update({ title: nT, content: nC }).eq('id', id); location.reload(); }
+            if(!error) location.reload();
         }
 
         window.onload = loadAll;
